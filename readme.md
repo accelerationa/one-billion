@@ -1,8 +1,8 @@
 ## 回测指令
-Run with zipline run -f run.py --start [start-date] --end [end-date] -o [output file] --capital-base [starting-capital]
+`zipline run -f run.py --start [start-date] --end [end-date] -o [output file] --capital-base [starting-capital]`
 
 eg.
-Run with zipline run -f run.py --start 2017-1-1 --end 2018-1-1 -o dma.pickleclear --capital-base 100000
+`zipline run -f run.py --start 2017-1-1 --end 2018-1-1 -o dma.pickleclear --capital-base 100000`
 
 
 ## Context object 解释
