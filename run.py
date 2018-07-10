@@ -1,9 +1,10 @@
-from zipline.api import record, symbol, get_open_orders, order_percent, order, order_target_percent
+from zipline.api import record, symbol, get_open_orders, order_percent, order, order_target_percent, set_commission, set_slippage
 import operator
 import math
 from pandas import *
 from numpy import *
 from zipline.errors import SymbolNotFound
+from zipline.finance import commission, slippage
 
 
 def initialize(context):
@@ -18,6 +19,16 @@ def initialize(context):
     context.PORTFOLIO_SIZE = 20
     context.STARTING_CASH = 100000.0
     context.my_portfolio_quantity = {}
+
+    # Setting equity commission model to zero commission
+    set_commission(
+        us_equities=commission.PerShare(cost=0.000, min_trade_cost=0)
+    )
+
+    # Setting slippage model; This is the default slippage, we need to figure out what slippage model suits our case
+    set_slippage(
+        us_equities=slippage.FixedBasisPointsSlippage(basis_points=5, volume_limit=0.1)
+    )
 
 # This method runs every day. data.history fetches the data from TODAY
 def handle_data(context, data):
@@ -62,8 +73,6 @@ def handle_data(context, data):
         if stock not in context.my_portfolio_quantity.keys():
             quantity = int(capital_each_share / data.current(symbol(stock), 'close'))
 
-            # order(symbol(stock) , quantity)
-
             order_percent(symbol(stock) , 1.0 / context.PORTFOLIO_SIZE)
             
             context.my_portfolio_quantity[stock] = quantity
@@ -72,7 +81,6 @@ def handle_data(context, data):
         if stock not in portfolio:
             quantity = context.my_portfolio_quantity[stock]
             del context.my_portfolio_quantity[stock]
-            # order(symbol(stock) ,-quantity)
 
             order_target_percent(symbol(stock) , 0.0)
             
